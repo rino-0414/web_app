@@ -1,3 +1,3 @@
 from flask import Flask
-app = Flask(__name__)
-import web_app.app
+main = Flask(__name__)
+import web_app.main
