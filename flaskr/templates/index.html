@@ -5,11 +5,145 @@
     <meta charset="UTF-8">
     <title>タスク一覧</title>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var today = new Date();
+            var currentYear = today.getFullYear();
+            var currentMonth = today.getMonth();
+            var currentDate = today.getDate();
+
+            function generateCalendar(year, month) {
+                var daysInMonth = new Date(year, month + 1, 0).getDate();
+                var firstDay = new Date(year, month, 1).getDay();
+                var calendar = '<table><tr>';
+                var daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+                
+                for (var i = 0; i < daysOfWeek.length; i++) {
+                    calendar += '<th>' + daysOfWeek[i] + '</th>';
+                }
+                calendar += '</tr><tr>';
+                
+                for (var i = 0; i < firstDay; i++) {
+                    calendar += '<td></td>';
+                }
+                
+                for (var day = 1; day <= daysInMonth; day++) {
+                    if ((firstDay + day - 1) % 7 == 0) {
+                        calendar += '</tr><tr>';
+                    }
+                    var cellClass = (year === currentYear && month === currentMonth && day === currentDate) ? 'calendar-day today' : 'calendar-day';
+                    calendar += '<td class="' + cellClass + '" data-date="' + year + '-' + (month + 1) + '-' + day + '">' + day + '</td>';
+                }
+                
+                calendar += '</tr></table>';
+                $('#calendar').html(calendar);
+                $('#current-month').text(year + '年 ' + (month + 1) + '月');
+            }
+            
+            generateCalendar(currentYear, currentMonth);
+            
+            $('#prev-month').click(function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                generateCalendar(currentYear, currentMonth);
+            });
+            
+            $('#next-month').click(function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                generateCalendar(currentYear, currentMonth);
+            });
+            
+            $(document).on('click', '.calendar-day', function() {
+                var date = $(this).data('date');
+                $.get("{{ url_for('main.get_tasks') }}", { date: date }, function(data) {
+                    $('#task-details').html(data);
+                    $('#task-modal').show();
+                });
+            });
+            
+            $('#task-form').submit(function(event) {
+                event.preventDefault();
+                var title = $('#task-title').val();
+                var description = $('#task-description').val();
+                var due_date = $('#task-date').val();
+                
+                $.post("{{ url_for('main.add') }}", {
+                    title: title,
+                    description: description,
+                    due_date: due_date
+                }, function(data) {
+                    location.reload();
+                });
+            });
+            
+            $('#task-modal-close').click(function() {
+                $('#task-modal').hide();
+            });
+        });
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .calendar-day {
+            cursor: pointer;
+        }
+        .today {
+            background-color: yellow; /* 今日の日付をハイライト */
+        }
+        #task-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
 
 <body>
     <h1>タスク一覧</h1>
-    <a href="{{ url_for('main.add') }}">タスクを追加</a>
+    <div>
+        <button id="prev-month">前の月</button>
+        <span id="current-month"></span>
+        <button id="next-month">次の月</button>
+    </div>
+    <div id="calendar"></div>
+    
+    <div id="task-modal">
+        <div id="task-details"></div>
+        <button type="button" id="task-modal-close">閉じる</button>
+    </div>
+    
+    <div id="task-modal-add">
+        <form id="task-form">
+            <label for="task-title">タイトル</label>
+            <input type="text" id="task-title" name="title" required>
+            <label for="task-description">説明</label>
+            <textarea id="task-description" name="description"></textarea>
+            <input type="hidden" id="task-date" name="due_date">
+            <button type="submit">追加</button>
+            <button type="button" id="task-modal-close">閉じる</button>
+        </form>
+    </div>
+    
     <h2>期限が近いタスク</h2>
     <ul>
         {% for task in tasks %}

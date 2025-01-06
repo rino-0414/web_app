@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 import psycopg2
 from datetime import date, timedelta
 
@@ -44,6 +44,17 @@ def index():
 @bp.route('/form')
 def form():
     return render_template('form.html')
+
+@bp.route('/get_tasks')
+def get_tasks():
+    date_str = request.args.get('date')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT title, description FROM tasks WHERE due_date = %s', (date_str,))
+    tasks = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify(tasks)
 
 @bp.route('/add', methods=('GET', 'POST'))
 def add():
