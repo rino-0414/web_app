@@ -12,9 +12,9 @@ flask run --debug
   
 共有の際.envを使用してpostgreSQLにアクセスします。以下のフォーマットでWEB_APP上に.envを用意すること。  
   
-DB_HOST=localhost
-DB_NAME=calendar_app
-DB_USER=postgres
-DB_PASSWORD=your_password  
+DB_HOST=localhost  
+DB_NAME=calendar_app  
+DB_USER=postgres  
+DB_PASSWORD=your_password    
   
 この.envファイルは.gitignoreにより、プッシュされないようになっています。
