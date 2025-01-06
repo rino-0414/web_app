@@ -56,6 +56,16 @@ def get_tasks():
     conn.close()
     return jsonify(tasks)
 
+@bp.route('/get_all_tasks')
+def get_all_tasks():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT due_date, title FROM tasks')
+    tasks = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify(tasks)
+
 @bp.route('/add', methods=('GET', 'POST'))
 def add():
     if request.method == 'POST':
@@ -73,6 +83,49 @@ def add():
         return redirect(url_for('main.index'))
     
     return render_template('add.html')
+
+@bp.route('/task_list')
+def task_list():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT id, title, description, due_date FROM tasks ORDER BY due_date')
+    tasks = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('task_list.html', tasks=tasks)
+
+@bp.route('/edit_task/<int:task_id>', methods=('GET', 'POST'))
+def edit_task(task_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT id, title, description, due_date FROM tasks WHERE id = %s', (task_id,))
+    task = cur.fetchone()
+    cur.close()
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        due_date = request.form['due_date']
+        
+        cur = conn.cursor()
+        cur.execute('UPDATE tasks SET title = %s, description = %s, due_date = %s WHERE id = %s',
+                    (title, description, due_date, task_id))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('main.task_list'))
+    
+    return render_template('edit_task.html', task=task)
+
+@bp.route('/delete_task/<int:task_id>', methods=('POST',))
+def delete_task(task_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('DELETE FROM tasks WHERE id = %s', (task_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect(url_for('main.task_list'))
 
 @bp.route('/upcoming')
 def upcoming():

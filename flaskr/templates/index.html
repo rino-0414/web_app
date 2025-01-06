@@ -12,6 +12,21 @@
             var currentYear = today.getFullYear();
             var currentMonth = today.getMonth();
             var currentDate = today.getDate();
+            var tasks = {};
+
+            function fetchTasks() {
+                $.get("{{ url_for('main.get_all_tasks') }}", function(data) {
+                    tasks = data.reduce(function(acc, task) {
+                        var date = task[0];
+                        if (!acc[date]) {
+                            acc[date] = [];
+                        }
+                        acc[date].push(task[1]);
+                        return acc;
+                    }, {});
+                    generateCalendar(currentYear, currentMonth);
+                });
+            }
 
             function generateCalendar(year, month) {
                 var daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -32,8 +47,10 @@
                     if ((firstDay + day - 1) % 7 == 0) {
                         calendar += '</tr><tr>';
                     }
+                    var dateStr = year + '-' + (month + 1).toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
                     var cellClass = (year === currentYear && month === currentMonth && day === currentDate) ? 'calendar-day today' : 'calendar-day';
-                    calendar += '<td class="' + cellClass + '" data-date="' + year + '-' + (month + 1) + '-' + day + '">' + day + '</td>';
+                    var pinIcon = tasks[dateStr] ? '<span class="pin-icon">📌</span>' : '';
+                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '">' + day + pinIcon + '</td>';
                 }
                 
                 calendar += '</tr></table>';
@@ -41,7 +58,7 @@
                 $('#current-month').text(year + '年 ' + (month + 1) + '月');
             }
             
-            generateCalendar(currentYear, currentMonth);
+            fetchTasks();
             
             $('#prev-month').click(function() {
                 currentMonth--;
@@ -64,7 +81,11 @@
             $(document).on('click', '.calendar-day', function() {
                 var date = $(this).data('date');
                 $.get("{{ url_for('main.get_tasks') }}", { date: date }, function(data) {
-                    $('#task-details').html(data);
+                    var taskDetails = data.map(function(task) {
+                        return '<p><strong>' + task[0] + '</strong> ' + task[1] + '</p>';
+                    }).join('');
+                    $('#task-details').html(taskDetails);
+                    $('#task-date').val(date);
                     $('#task-modal').show();
                 });
             });
@@ -87,6 +108,10 @@
             $('#task-modal-close').click(function() {
                 $('#task-modal').hide();
             });
+
+            $('#add-task-button').click(function() {
+                $('#task-form-container').toggle();
+            });
         });
     </script>
     <style>
@@ -98,12 +123,19 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
+            position: relative;
         }
         .calendar-day {
             cursor: pointer;
         }
         .today {
-            background-color: yellow; /* 今日の日付をハイライト */
+            background-color: rgb(255, 248, 152); /* 今日の日付をハイライト */
+        }
+        .pin-icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 12px;
         }
         #task-modal {
             display: none;
@@ -114,6 +146,13 @@
             background-color: white;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #task-form-container {
+            display: none;
+        }
+        #task-details p {
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
@@ -129,19 +168,18 @@
     
     <div id="task-modal">
         <div id="task-details"></div>
+        <button id="add-task-button">追加</button>
+        <div id="task-form-container">
+            <form id="task-form">
+                <label for="task-title">タイトル</label>
+                <input type="text" id="task-title" name="title" required>
+                <label for="task-description">説明</label>
+                <textarea id="task-description" name="description"></textarea>
+                <input type="hidden" id="task-date" name="due_date">
+                <button type="submit">追加</button>
+            </form>
+        </div>
         <button type="button" id="task-modal-close">閉じる</button>
-    </div>
-    
-    <div id="task-modal-add">
-        <form id="task-form">
-            <label for="task-title">タイトル</label>
-            <input type="text" id="task-title" name="title" required>
-            <label for="task-description">説明</label>
-            <textarea id="task-description" name="description"></textarea>
-            <input type="hidden" id="task-date" name="due_date">
-            <button type="submit">追加</button>
-            <button type="button" id="task-modal-close">閉じる</button>
-        </form>
     </div>
     
     <h2>期限が近いタスク</h2>
@@ -150,7 +188,7 @@
             <li>{{ task[1] }} - {{ task[3] }}</li>
         {% endfor %}
     </ul>
-    <a href="{{ url_for('main.upcoming') }}">期限が近いタスクを見る</a>
+    <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
     <a href="{{ url_for('main.overdue') }}">期限切れのタスクを見る</a>
 </body>
 
