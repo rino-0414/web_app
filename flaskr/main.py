@@ -10,3 +10,9 @@ def index():
         'index.html',
         test=test
     )
+
+@app.route('/form')
+def form():
+    return render_template(
+        'form.html'
+    )
