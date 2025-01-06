@@ -1,10 +1,17 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+
+    # アプリの設定や初期化コードをここに追加
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+    )
 
     # データベース設定
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0414@localhost/calendar_app'
@@ -18,7 +25,9 @@ def create_app():
         db.create_all()
 
     # ブループリントの登録
-    from .main import bp
-    app.register_blueprint(bp)
+    from . import main
+    app.register_blueprint(main.bp)
 
     return app
+
+app = create_app()

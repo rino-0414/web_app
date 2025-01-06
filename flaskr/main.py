@@ -1,11 +1,11 @@
+from flask import Blueprint, render_template
 from flaskr import app
-from flask import render_template
 
-@app.route('/')
+bp = Blueprint('main', __name__)
+
+@bp.route('/')
 def index():
-    return render_template(
-        'index.html',
-    )
+    return 'Hello, World!'
 
 @app.route('/form')
 def form():
