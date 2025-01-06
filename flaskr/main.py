@@ -1,19 +1,15 @@
-from dotenv import load_dotenv
-import os
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 import psycopg2
 from datetime import date, timedelta
-
-load_dotenv()  # .env ファイルから環境変数を読み込む
 
 bp = Blueprint('main', __name__)
 
 def get_db_connection():
     conn = psycopg2.connect(
-        host=os.getenv('DB_HOST', 'localhost'),
-        database=os.getenv('DB_NAME', 'calendar_app'),
-        user=os.getenv('DB_USER', 'postgres'),
-        password=os.getenv('DB_PASSWORD')
+        host="localhost",
+        database="calendar_app",
+        user="postgres",
+        password="0414"
     )
     return conn
 
@@ -88,11 +84,12 @@ def add():
 def task_list():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM tasks ORDER BY due_date')
+    cur.execute('SELECT id, title, description, due_date FROM tasks ORDER BY due_date')
     tasks = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('task_list.html', tasks=tasks, current_date=date.today())
+    current_date = date.today()
+    return render_template('task_list.html', tasks=tasks, current_date=current_date)
 
 @bp.route('/edit_task/<int:task_id>', methods=('GET', 'POST'))
 def edit_task(task_id):

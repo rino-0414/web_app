@@ -19,7 +19,7 @@
                 $('#task-popup').show();
             });
 
-            $('#task-popup-close').click(function() {
+            $('#popup-close').click(function() {
                 $('#task-popup').hide();
             });
         });
@@ -38,7 +38,7 @@
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             width: 400px;
-            height: 200px;
+            height: auto;
             overflow-y: auto;
         }
         #popup-close {
@@ -56,17 +56,24 @@
             right: 10px;
         }
         .back-button {
-            margin-right: 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
             font-size: 24px;
             text-decoration: none;
             color: black;
+            cursor: pointer;
+        }
+        h1 {
+            margin-top: 50px; /* タイトルを少し下にずらす */
         }
     </style>
 </head>
 <body>
     <a href="{{ url_for('main.index') }}" class="back-button">×</a>
     <h1>タスク一覧</h1>
-    {% if tasks %}
     <ul>
         {% for task in tasks %}
             <li>
@@ -79,9 +86,7 @@
             </li>
         {% endfor %}
     </ul>
-    {% else %}
-    <p>現在残っているタスクはありません</p>
-    {% endif %}
+
     <div id="task-popup">
         <button id="popup-close">×</button>
         <h2 id="popup-title"></h2>
