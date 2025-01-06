@@ -6,10 +6,10 @@ bp = Blueprint('main', __name__)
 
 def get_db_connection():
     conn = psycopg2.connect(
-        host="your_host",
-        database="your_database",
-        user="your_user",
-        password="your_password"
+        host="localhost",
+        database="calendar_app",
+        user="postgres",
+        password="0414"
     )
     return conn
 
@@ -27,6 +27,9 @@ def create_tasks_table():
     conn.commit()
     cur.close()
     conn.close()
+
+# アプリケーションの起動時にテーブルを作成
+create_tasks_table()
 
 @bp.route('/')
 def index():
