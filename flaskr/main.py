@@ -41,10 +41,6 @@ def index():
     conn.close()
     return render_template('index.html', tasks=tasks)
 
-@bp.route('/form')
-def form():
-    return render_template('form.html')
-
 @bp.route('/get_tasks')
 def get_tasks():
     date_str = request.args.get('date')
@@ -126,24 +122,3 @@ def delete_task(task_id):
     cur.close()
     conn.close()
     return redirect(url_for('main.task_list'))
-
-@bp.route('/upcoming')
-def upcoming():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM tasks WHERE due_date BETWEEN %s AND %s ORDER BY due_date',
-                (date.today(), date.today() + timedelta(days=7)))
-    tasks = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('upcoming.html', tasks=tasks)
-
-@bp.route('/overdue')
-def overdue():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM tasks WHERE due_date < %s ORDER BY due_date', (date.today(),))
-    tasks = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('overdue.html', tasks=tasks)
