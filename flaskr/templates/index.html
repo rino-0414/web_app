@@ -3,13 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>アプリ</title>
+    <title>タスク一覧</title>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 
 <body>
-    <h1>うまくいった！</h1>
-    <a href="{{url_for('form')}}">編集</a>
+    <h1>タスク一覧</h1>
+    <a href="{{ url_for('main.add') }}">タスクを追加</a>
+    <h2>期限が近いタスク</h2>
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task[1] }} - {{ task[3] }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('main.upcoming') }}">期限が近いタスクを見る</a>
+    <a href="{{ url_for('main.overdue') }}">期限切れのタスクを見る</a>
 </body>
 
 </html>
