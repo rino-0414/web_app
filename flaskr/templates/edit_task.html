@@ -4,38 +4,6 @@
     <meta charset="UTF-8">
     <title>タスク編集</title>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    <style>
-        .back-button {
-            margin-right: 10px;
-            font-size: 24px;
-            text-decoration: none;
-            color: black;
-        }
-        #edit-form {
-            display: flex;
-            flex-direction: column;
-        }
-        #edit-form label, #edit-form input, #edit-form textarea {
-            margin-bottom: 10px;
-        }
-        #edit-form textarea {
-            height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
-        }
-        #edit-form button {
-            align-self: flex-end;
-        }
-        #due_date {
-            width: 150px; /* 期限の入力欄を短くする */
-        }
-        #delete-form {
-            display: flex;
-            justify-content: flex-start; /* 左側に配置 */
-            margin-top: 10px;
-        }
-        #delete-form button {
-            margin-right: 10px; /* ボタン間のスペースを追加 */
-        }
-    </style>
     <script>
         function confirmDelete() {
             return confirm("タスクを削除しますか？");
@@ -43,19 +11,22 @@
     </script>
 </head>
 <body>
-    <a href="{{ url_for('main.task_list') }}" class="back-button">×</a>
-    <h1>タスク編集</h1>
-    <form id="edit-form" method="post">
-        <label for="title">タイトル</label>
-        <input type="text" id="title" name="title" value="{{ task[1] }}" required>
-        <label for="description">説明</label>
-        <textarea id="description" name="description">{{ task[2] }}</textarea>
-        <label for="due_date">期限</label>
-        <input type="date" id="due_date" name="due_date" value="{{ task[3] }}" required>
-    </form>
-    <form id="delete-form" action="{{ url_for('main.delete_task', task_id=task[0]) }}" method="post" onsubmit="return confirmDelete();">
-        <button type="submit">削除</button>
-        <button type="button" onclick="document.getElementById('edit-form').submit();">更新</button>
-    </form>
+    <div class="container">
+        <button class="back-button">×</button>
+        <h1>タスクの編集</h1>
+        <form id="edit-form" action="{{ url_for('main.edit_task', task_id=task[0]) }}" method="post">
+            <label for="title">タイトル</label>
+            <input type="text" id="title" name="title" value="{{ task[1] }}" required>
+            <label for="description">説明</label>
+            <textarea id="description" name="description">{{ task[2] }}</textarea>
+            <label for="due_date">期限</label>
+            <input type="date" id="due_date" name="due_date" value="{{ task[3] }}">
+            <div class="button-group">
+                <button type="submit">更新</button>
+                <button type="submit" form="delete-form">削除</button>
+            </div>
+        </form>
+        <form id="delete-form" action="{{ url_for('main.delete_task', task_id=task[0]) }}" method="post" onsubmit="return confirmDelete();"></form>
+    </div>
 </body>
 </html>

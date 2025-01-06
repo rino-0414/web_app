@@ -17,17 +17,19 @@
             function fetchTasks() {
                 $.get("{{ url_for('main.get_all_tasks') }}", function(data) {
                     tasks = data.reduce(function(acc, task) {
-                        var date = task[0];
-                        if (!acc[date]) {
-                            acc[date] = [];
+                        var date = new Date(task[0]);
+                        var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+                        if (!acc[formattedDate]) {
+                            acc[formattedDate] = [];
                         }
-                        acc[date].push(task[1]);
+                        acc[formattedDate].push(task[1]);
                         return acc;
                     }, {});
                     console.log(tasks); // タスクデータをコンソールに出力して確認
                     var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
                     $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
+                    updateUpcomingTasks();
                 });
             }
 
@@ -68,6 +70,25 @@
                 calendar += '</tr></table>';
                 $('#calendar').html(calendar);
                 $('#current-month').text(year + '年 ' + (month + 1) + '月');
+            }
+
+            function updateUpcomingTasks() {
+                $.get("{{ url_for('main.get_all_tasks') }}", function(data) {
+                    var upcomingTasks = data.filter(function(task) {
+                        var taskDate = new Date(task[0]);
+                        return taskDate >= today;
+                    }).sort(function(a, b) {
+                        return new Date(a[0]) - new Date(b[0]);
+                    }).slice(0, 5);
+
+                    var taskList = upcomingTasks.map(function(task) {
+                        var date = new Date(task[0]);
+                        var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+                        return '<li>' + task[1] + ' - ' + formattedDate + '</li>';
+                    }).join('');
+
+                    $('#upcoming-tasks').html(taskList);
+                });
             }
             
             fetchTasks();
@@ -117,6 +138,9 @@
                     due_date: due_date
                 }, function(data) {
                     fetchTasks(); // タスクを追加した後にカレンダーを再生成
+                    $('#task-form-modal').hide(); // ポップアップを閉じる
+                    $('#task-modal').hide(); // タスク詳細ポップアップを閉じる
+                    updateUpcomingTasks(); // 期限が近いタスクを更新
                 });
             });
             
@@ -133,130 +157,42 @@
             });
         });
     </script>
-    <style>
-        body {
-            margin: 0 80px; /* ページの両端に余白を追加 */
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            position: relative;
-            height: 80px; /* 日付のブロックの縦を大きくする */
-        }
-        .calendar-day {
-            cursor: pointer;
-        }
-        .today {
-            background-color: rgb(255, 248, 152); /* 今日の日付をハイライト */
-        }
-        .prev-month, .next-month {
-            color: #ccc; /* 前月と次月の日付をグレーにする */
-        }
-        .date-number {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px; /* 日付のサイズを大きくする */
-            font-weight: bold; /* 日付を太字にする */
-        }
-        #task-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 400px; /* ポップアップの幅を一定に */
-            height: 300px; /* ポップアップの高さを一定に */
-            overflow-y: auto; /* 内容が多い場合にスクロール可能に */
-        }
-        #task-form-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 400px; /* ポップアップの幅を一定に */
-            height: 300px; /* ポップアップの高さを一定に */
-            overflow-y: auto; /* 内容が多い場合にスクロール可能に */
-        }
-        #task-details p {
-            display: flex;
-            justify-content: space-between;
-        }
-        #popup-date {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 18px; /* 日付のフォントサイズを大きく */
-        }
-        #task-modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #task-form-modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #add-task-button {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-        #task-form {
-            display: flex;
-            flex-direction: column;
-        }
-        #task-form label, #task-form input, #task-form textarea {
-            margin-bottom: 10px;
-        }
-        #task-form textarea {
-            height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
-        }
-        #task-form button {
-            align-self: flex-end;
-        }
-    </style>
 </head>
 
 <body>
     <h1 id="task-count"></h1>
-    <div>
-        <button id="prev-month">&lt;</button>
-        <span id="current-month"></span>
-        <button id="next-month">&gt;</button>
+    <div class="main-container">
+        <div class="calendar-container">
+            <button id="prev-month">&lt;</button>
+            <span id="current-month"></span>
+            <button id="next-month">&gt;</button>
+            <div id="calendar"></div>
+        </div>
+        
+        <div class="upcoming-tasks-container">
+            <h2>期限が近いタスク</h2>
+            <ul id="upcoming-tasks">
+                {% if tasks %}
+                    {% for task in tasks %}
+                        <li>{{ task[1] }} - {{ task[3] }}</li>
+                    {% endfor %}
+                {% else %}
+                    <p>現在残っているタスクはありません</p>
+                {% endif %}
+            </ul>
+            <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
+        </div>
     </div>
-    <div id="calendar"></div>
-    
+
     <div id="task-modal">
+        <button id="task-modal-close" class="close-button">×</button>
         <div id="popup-date"></div>
         <div id="task-details"></div>
         <button id="add-task-button">追加</button>
-        <button type="button" id="task-modal-close">×</button>
     </div>
 
     <div id="task-form-modal">
+        <button id="task-form-modal-close" class="close-button">×</button>
         <form id="task-form">
             <label for="task-title">タイトル</label>
             <input type="text" id="task-title" name="title" required>
@@ -265,20 +201,7 @@
             <input type="hidden" id="task-date" name="due_date">
             <button type="submit">追加</button>
         </form>
-        <button type="button" id="task-form-modal-close">×</button>
     </div>
-    
-    <h2>期限が近いタスク</h2>
-    {% if tasks %}
-    <ul>
-        {% for task in tasks %}
-            <li>{{ task[1] }} - {{ task[3] }}</li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>現在残っているタスクはありません</p>
-    {% endif %}
-    <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
 </body>
 
 </html>

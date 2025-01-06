@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>タスク一覧</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -24,75 +24,29 @@
             });
         });
     </script>
-    <style>
-        .expired-date {
-            color: red; /* 期限切れのタスクの期限を赤にする */
-        }
-        #task-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 400px;
-            height: auto;
-            overflow-y: auto;
-        }
-        #popup-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #popup-edit {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-        .back-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            text-decoration: none;
-            color: black;
-            cursor: pointer;
-        }
-        h1 {
-            margin-top: 50px; /* タイトルを少し下にずらす */
-        }
-    </style>
 </head>
 <body>
-    <a href="{{ url_for('main.index') }}" class="back-button">×</a>
-    <h1>タスク一覧</h1>
-    <ul>
-        {% for task in tasks %}
-            <li>
-                <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span> - 
-                {% if task[3] < current_date %}
-                    <span class="expired-date">{{ task[3] }} 期限切れ</span>
-                {% else %}
-                    <span>{{ task[3] }}</span>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-
-    <div id="task-popup">
-        <button id="popup-close">×</button>
-        <h2 id="popup-title"></h2>
-        <p id="popup-description"></p>
-        <p id="popup-due-date"></p>
-        <a id="edit-task-button" href="#">編集</a>
+    <div class="container">
+        <a href="{{ url_for('main.index') }}" class="back-button">×</a>
+        <h1>タスク一覧</h1>
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span>
+                    {% if task[3] < current_date %}
+                        <span class="expired-date">{{ task[3] }} 期限切れ</span>
+                    {% else %}
+                        <span>{{ task[3] }}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        <div id="task-popup" style="display:none;">
+            <h2 id="popup-title"></h2>
+            <p id="popup-description"></p>
+            <a id="edit-task-button" href="#">編集</a>
+            <button id="popup-close">閉じる</button>
+        </div>
     </div>
 </body>
 </html>
