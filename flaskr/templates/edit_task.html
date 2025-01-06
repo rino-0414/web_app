@@ -4,18 +4,58 @@
     <meta charset="UTF-8">
     <title>タスク編集</title>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <style>
+        .back-button {
+            margin-right: 10px;
+            font-size: 24px;
+            text-decoration: none;
+            color: black;
+        }
+        #edit-form {
+            display: flex;
+            flex-direction: column;
+        }
+        #edit-form label, #edit-form input, #edit-form textarea {
+            margin-bottom: 10px;
+        }
+        #edit-form textarea {
+            height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
+        }
+        #edit-form button {
+            align-self: flex-end;
+        }
+        #due_date {
+            width: 150px; /* 期限の入力欄を短くする */
+        }
+        #delete-form {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        #delete-form button {
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        function confirmDelete() {
+            return confirm("タスクを削除しますか？");
+        }
+    </script>
 </head>
 <body>
+    <a href="{{ url_for('main.task_list') }}" class="back-button">×</a>
     <h1>タスク編集</h1>
-    <form method="post">
+    <form id="edit-form" method="post">
         <label for="title">タイトル</label>
         <input type="text" id="title" name="title" value="{{ task[1] }}" required>
         <label for="description">説明</label>
         <textarea id="description" name="description">{{ task[2] }}</textarea>
         <label for="due_date">期限</label>
         <input type="date" id="due_date" name="due_date" value="{{ task[3] }}" required>
-        <button type="submit">更新</button>
     </form>
-    <a href="{{ url_for('main.task_list') }}">戻る</a>
+    <form id="delete-form" action="{{ url_for('main.delete_task', task_id=task[0]) }}" method="post" onsubmit="return confirmDelete();">
+        <button type="submit">削除</button>
+        <button type="button" onclick="document.getElementById('edit-form').submit();">更新</button>
+    </form>
 </body>
 </html>

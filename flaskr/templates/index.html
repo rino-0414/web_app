@@ -24,6 +24,8 @@
                         acc[date].push(task[1]);
                         return acc;
                     }, {});
+                    var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
+                    $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
                 });
             }
@@ -39,18 +41,18 @@
                 }
                 calendar += '</tr><tr>';
                 
-                for (var i = 0; i < firstDay; i++) {
+                for (var i = 0; firstDay > i; i++) {
                     calendar += '<td></td>';
                 }
                 
-                for (var day = 1; day <= daysInMonth; day++) {
+                for (var day = 1; daysInMonth >= day; day++) {
                     if ((firstDay + day - 1) % 7 == 0) {
                         calendar += '</tr><tr>';
                     }
                     var dateStr = year + '-' + (month + 1).toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
                     var cellClass = (year === currentYear && month === currentMonth && day === currentDate) ? 'calendar-day today' : 'calendar-day';
-                    var pinIcon = tasks[dateStr] ? '<span class="pin-icon">📌</span>' : '';
-                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '">' + day + pinIcon + '</td>';
+                    var flagIcon = tasks[dateStr] ? '<span class="flag-icon">🚩</span>' : '';
+                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span>' + flagIcon + '</td>';
                 }
                 
                 calendar += '</tr></table>';
@@ -80,6 +82,9 @@
             
             $(document).on('click', '.calendar-day', function() {
                 var date = $(this).data('date');
+                var dateParts = date.split('-');
+                var formattedDate = dateParts[1] + '/' + dateParts[2];
+                $('#popup-date').text(formattedDate);
                 $.get("{{ url_for('main.get_tasks') }}", { date: date }, function(data) {
                     var taskDetails = data.map(function(task) {
                         return '<p><strong>' + task[0] + '</strong> ' + task[1] + '</p>';
@@ -110,7 +115,11 @@
             });
 
             $('#add-task-button').click(function() {
-                $('#task-form-container').toggle();
+                $('#task-form-modal').show();
+            });
+
+            $('#task-form-modal-close').click(function() {
+                $('#task-form-modal').hide();
             });
         });
     </script>
@@ -124,6 +133,7 @@
             padding: 8px;
             text-align: center;
             position: relative;
+            height: 50px; /* 日付のブロックの縦を大きくする */
         }
         .calendar-day {
             cursor: pointer;
@@ -131,11 +141,17 @@
         .today {
             background-color: rgb(255, 248, 152); /* 今日の日付をハイライト */
         }
-        .pin-icon {
+        .flag-icon {
             position: absolute;
             bottom: 5px;
             right: 5px;
             font-size: 12px;
+        }
+        .date-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 14px;
         }
         #task-modal {
             display: none;
@@ -146,48 +162,110 @@
             background-color: white;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 400px; /* ポップアップの幅を一定に */
+            height: 300px; /* ポップアップの高さを一定に */
+            overflow-y: auto; /* 内容が多い場合にスクロール可能に */
         }
-        #task-form-container {
+        #task-form-modal {
             display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 400px; /* ポップアップの幅を一定に */
+            height: 300px; /* ポップアップの高さを一定に */
+            overflow-y: auto; /* 内容が多い場合にスクロール可能に */
         }
         #task-details p {
             display: flex;
             justify-content: space-between;
         }
+        #popup-date {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 18px; /* 日付のフォントサイズを大きく */
+        }
+        #task-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #task-form-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #add-task-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        #task-form {
+            display: flex;
+            flex-direction: column;
+        }
+        #task-form label, #task-form input, #task-form textarea {
+            margin-bottom: 10px;
+        }
+        #task-form textarea {
+            height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
+        }
+        #task-form button {
+            align-self: flex-end;
+        }
     </style>
 </head>
 
 <body>
-    <h1>タスク一覧</h1>
+    <h1 id="task-count"></h1>
     <div>
-        <button id="prev-month">前の月</button>
+        <button id="prev-month">&lt;</button>
         <span id="current-month"></span>
-        <button id="next-month">次の月</button>
+        <button id="next-month">&gt;</button>
     </div>
     <div id="calendar"></div>
     
     <div id="task-modal">
+        <div id="popup-date"></div>
         <div id="task-details"></div>
         <button id="add-task-button">追加</button>
-        <div id="task-form-container">
-            <form id="task-form">
-                <label for="task-title">タイトル</label>
-                <input type="text" id="task-title" name="title" required>
-                <label for="task-description">説明</label>
-                <textarea id="task-description" name="description"></textarea>
-                <input type="hidden" id="task-date" name="due_date">
-                <button type="submit">追加</button>
-            </form>
-        </div>
-        <button type="button" id="task-modal-close">閉じる</button>
+        <button type="button" id="task-modal-close">×</button>
+    </div>
+
+    <div id="task-form-modal">
+        <form id="task-form">
+            <label for="task-title">タイトル</label>
+            <input type="text" id="task-title" name="title" required>
+            <label for="task-description">説明</label>
+            <textarea id="task-description" name="description"></textarea>
+            <input type="hidden" id="task-date" name="due_date">
+            <button type="submit">追加</button>
+        </form>
+        <button type="button" id="task-form-modal-close">×</button>
     </div>
     
     <h2>期限が近いタスク</h2>
+    {% if tasks %}
     <ul>
         {% for task in tasks %}
             <li>{{ task[1] }} - {{ task[3] }}</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <p>現在残っているタスクはありません</p>
+    {% endif %}
     <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
 </body>
 
