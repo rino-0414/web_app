@@ -88,12 +88,11 @@ def add():
 def task_list():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT id, title, description, due_date FROM tasks ORDER BY due_date')
+    cur.execute('SELECT * FROM tasks ORDER BY due_date')
     tasks = cur.fetchall()
     cur.close()
     conn.close()
-    current_date = date.today()
-    return render_template('task_list.html', tasks=tasks, current_date=current_date)
+    return render_template('task_list.html', tasks=tasks, current_date=date.today())
 
 @bp.route('/edit_task/<int:task_id>', methods=('GET', 'POST'))
 def edit_task(task_id):

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>タスク一覧</title>
+    <title>スケジューラー</title>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -24,6 +24,7 @@
                         acc[date].push(task[1]);
                         return acc;
                     }, {});
+                    console.log(tasks); // タスクデータをコンソールに出力して確認
                     var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
                     $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
@@ -33,6 +34,8 @@
             function generateCalendar(year, month) {
                 var daysInMonth = new Date(year, month + 1, 0).getDate();
                 var firstDay = new Date(year, month, 1).getDay();
+                var lastMonthDays = new Date(year, month, 0).getDate();
+                var nextMonthStartDay = 1;
                 var calendar = '<table><tr>';
                 var daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
                 
@@ -41,18 +44,25 @@
                 }
                 calendar += '</tr><tr>';
                 
-                for (var i = 0; firstDay > i; i++) {
-                    calendar += '<td></td>';
+                for (var i = 0; i < firstDay; i++) {
+                    calendar += '<td class="prev-month">' + (lastMonthDays - firstDay + i + 1) + '</td>';
                 }
                 
-                for (var day = 1; daysInMonth >= day; day++) {
+                for (var day = 1; day <= daysInMonth; day++) {
                     if ((firstDay + day - 1) % 7 == 0) {
                         calendar += '</tr><tr>';
                     }
                     var dateStr = year + '-' + (month + 1).toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
-                    var cellClass = (year === currentYear && month === currentMonth && day === currentDate) ? 'calendar-day today' : 'calendar-day';
-                    var flagIcon = tasks[dateStr] ? '<span class="flag-icon">🚩</span>' : '';
-                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span>' + flagIcon + '</td>';
+                    var cellClass = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) ? 'calendar-day today' : 'calendar-day';
+                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span></td>';
+                }
+                
+                var remainingDays = (firstDay + daysInMonth) % 7;
+                if (remainingDays !== 0) {
+                    for (var i = remainingDays; i < 7; i++) {
+                        calendar += '<td class="next-month">' + nextMonthStartDay + '</td>';
+                        nextMonthStartDay++;
+                    }
                 }
                 
                 calendar += '</tr></table>';
@@ -106,7 +116,7 @@
                     description: description,
                     due_date: due_date
                 }, function(data) {
-                    location.reload();
+                    fetchTasks(); // タスクを追加した後にカレンダーを再生成
                 });
             });
             
@@ -124,6 +134,9 @@
         });
     </script>
     <style>
+        body {
+            margin: 0 80px; /* ページの両端に余白を追加 */
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -133,7 +146,7 @@
             padding: 8px;
             text-align: center;
             position: relative;
-            height: 50px; /* 日付のブロックの縦を大きくする */
+            height: 80px; /* 日付のブロックの縦を大きくする */
         }
         .calendar-day {
             cursor: pointer;
@@ -141,17 +154,16 @@
         .today {
             background-color: rgb(255, 248, 152); /* 今日の日付をハイライト */
         }
-        .flag-icon {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 12px;
+        .prev-month, .next-month {
+            color: #ccc; /* 前月と次月の日付をグレーにする */
         }
         .date-number {
             position: absolute;
-            top: 5px;
-            left: 5px;
-            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px; /* 日付のサイズを大きくする */
+            font-weight: bold; /* 日付を太字にする */
         }
         #task-modal {
             display: none;

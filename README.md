@@ -4,6 +4,8 @@ flaskを使用してindex.htmlを表示させています。
 当環境ではvenvを使用して環境構築を行っています。  
 flask run の --debug は開発中のみ使用してください。ページを更新することでリアルタイムで更新されます。  
    
+python3 -m venv venv
+
 venv\Scripts\Activate.ps1  
 cd flaskr  
 $env:FLASK_APP="flaskr"  
