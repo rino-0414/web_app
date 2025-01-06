@@ -4,10 +4,7 @@ from flask import render_template
 @app.route('/')
 def index():
 
-    test = {
-        'name': 'Rino',
-        'age': 20
-    }
+    test = {'name': 'Rino', 'age':'admin'}
 
     return render_template(
         'index.html',
