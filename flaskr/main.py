@@ -5,8 +5,8 @@ from flask import render_template
 def index():
 
     test = {
-        'name': 'John',
-        'age': 25
+        'name': 'Rino',
+        'age': 20
     }
 
     return render_template(
