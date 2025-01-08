@@ -65,7 +65,7 @@ def get_tasks():
 def get_all_tasks():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT due_date, title FROM tasks')
+    cur.execute('SELECT due_date, title, description FROM tasks')
     tasks = cur.fetchall()
     cur.close()
     conn.close()

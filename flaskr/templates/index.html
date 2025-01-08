@@ -22,10 +22,9 @@
                         if (!acc[formattedDate]) {
                             acc[formattedDate] = [];
                         }
-                        acc[formattedDate].push(task[1]);
+                        acc[formattedDate].push(task);
                         return acc;
                     }, {});
-                    console.log(tasks); // タスクデータをコンソールに出力して確認
                     var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
                     $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
@@ -84,7 +83,7 @@
                     var taskList = upcomingTasks.map(function(task) {
                         var date = new Date(task[0]);
                         var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
-                        return '<li>' + task[1] + ' - ' + formattedDate + '</li>';
+                        return '<li><span class="upcoming-task-title" data-id="' + task[0] + '" data-description="' + task[2] + '" data-due-date="' + formattedDate + '">' + task[1] + ' - ' + formattedDate + '</span></li>';
                     }).join('');
 
                     $('#upcoming-tasks').html(taskList);
@@ -125,6 +124,17 @@
                     $('#task-modal').show();
                 });
             });
+
+            $(document).on('click', '.upcoming-task-title', function() {
+                var taskTitle = $(this).text();
+                var taskDescription = $(this).data('description');
+                var taskDueDate = $(this).data('due-date');
+                
+                $('#popup-title').text(taskTitle);
+                $('#popup-description').text(taskDescription);
+                $('#popup-date').text(taskDueDate);
+                $('#task-popup').show();
+            });
             
             $('#task-form').submit(function(event) {
                 event.preventDefault();
@@ -146,6 +156,10 @@
             
             $('#task-modal-close').click(function() {
                 $('#task-modal').hide();
+            });
+
+            $('#task-popup-close').click(function() {
+                $('#task-popup').hide();
             });
 
             $('#add-task-button').click(function() {
@@ -176,7 +190,7 @@
             <ul id="upcoming-tasks">
                 {% if tasks %}
                     {% for task in tasks %}
-                        <li>{{ task[1] }} - {{ task[3] }}</li>
+                        <li><span class="upcoming-task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }} - {{ task[3] }}</span></li>
                     {% endfor %}
                 {% else %}
                     <p>現在残っているタスクはありません</p>
@@ -191,6 +205,12 @@
         <div id="popup-date"></div>
         <div id="task-details"></div>
         <button id="add-task-button">追加</button>
+    </div>
+
+    <div id="task-popup">
+        <button id="task-popup-close" class="close-button">×</button>
+        <h2 id="popup-title"></h2>
+        <p id="popup-description"></p>
     </div>
 
     <div id="task-form-modal">
