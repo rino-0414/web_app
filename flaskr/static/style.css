@@ -319,7 +319,7 @@ th, td {
 }
 
 .upcoming-tasks-container {
-    max-width: 400px;
+    width: 300px;
     margin: 20px;
     background-color: #fff;
     padding: 20px;
@@ -485,7 +485,7 @@ th, td {
         align-items: center;
     }
 
-    .calendar-container {
+    .calendar-container, .upcoming-tasks-container {
         max-width: 800px;
         min-width: 600px;
     }
@@ -503,6 +503,11 @@ th, td {
     }
 
     .calendar-container {
+        max-width: 400px;
+        min-width: 400px;
+    }
+
+    .upcoming-tasks-container {
         max-width: 400px;
         min-width: 400px;
     }
