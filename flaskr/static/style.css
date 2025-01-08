@@ -86,7 +86,7 @@ th, td {
 }
 
 /* ポップアップ用 (index.html, task_list.html) */
-#task-modal, #task-form-modal {
+#task-modal, #task-form-modal, #task-popup {
     display: none;
     position: fixed;
     top: 50%;
@@ -96,7 +96,7 @@ th, td {
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 400px; /* ポップアップの幅を一定に */
-    height: auto; /* ポップアップの高さを自動に */
+    height: 300px;
     overflow-y: auto; /* 内容が多い場合にスクロール可能に */
     border-radius: 5px;
 }
@@ -109,6 +109,42 @@ th, td {
     border: none;
     font-size: 24px;
     cursor: pointer;
+}
+
+#add-task-button{
+    position: absolute;
+    bottom: 10px;
+    right: 10px; /* 右下に配置 */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#task-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#task-form label {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#task-form input[type="text"],
+#task-form textarea {
+    resize: none;
+    width: 95%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#task-form textarea {
+    height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
 }
 
 /* edit_task.html 用 */
@@ -136,8 +172,32 @@ th, td {
     margin-bottom: 10px;
 }
 
+#edit-form label {
+    font-weight: bold;
+}
+
+#edit-form input[type="text"]{
+    width: 100%;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 25px;
+}
+
+#edit-form input[type="date"] {   
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 25px;
+}
+
 #edit-form textarea {
-    height: 100px; /* 説明の入力欄をデフォルトで縦に伸ばす */
+    resize: vertical;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .button-group {
@@ -165,6 +225,18 @@ th, td {
 
 #delete-form button:hover {
     background-color: #c82333;
+}
+
+#edit-task-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 /* task_list.html 用 */
@@ -240,28 +312,13 @@ th, td {
     color: red;
 }
 
-#task-popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 400px;
-    height: auto;
-    overflow-y: auto;
-    border-radius: 5px;
-}
-
 #popup-close {
     position: absolute;
     top: 10px;
     right: 10px;
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 24px;
     cursor: pointer;
 }
 

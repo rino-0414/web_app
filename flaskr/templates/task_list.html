@@ -15,12 +15,17 @@
                 
                 $('#popup-title').text(taskTitle);
                 $('#popup-description').text(taskDescription);
-                $('#edit-task-button').attr('href', '/edit_task/' + taskId);
+                $('#edit-task-button').data('id', taskId);
                 $('#task-popup').show();
             });
 
             $('#popup-close').click(function() {
                 $('#task-popup').hide();
+            });
+
+            $('#edit-task-button').click(function() {
+                var taskId = $(this).data('id');
+                window.location.href = '/edit_task/' + taskId;
             });
         });
     </script>
@@ -41,12 +46,12 @@
                 </li>
             {% endfor %}
         </ul>
-        <div id="task-popup" style="display:none;">
-            <h2 id="popup-title"></h2>
-            <p id="popup-description"></p>
-            <a id="edit-task-button" href="#">編集</a>
-            <button id="popup-close">閉じる</button>
-        </div>
+    </div>
+    <div id="task-popup" style="display:none;">
+        <h2 id="popup-title"></h2>
+        <p id="popup-description"></p>
+        <button id="edit-task-button">編集</button>
+        <button id="popup-close">×</button>
     </div>
 </body>
 </html>

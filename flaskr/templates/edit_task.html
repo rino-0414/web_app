@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="container">
-        <button class="back-button">×</button>
+        <a href="{{ url_for('main.task_list') }}" class="back-button">×</a>
         <h1>タスクの編集</h1>
         <form id="edit-form" action="{{ url_for('main.edit_task', task_id=task[0]) }}" method="post">
             <label for="title">タイトル</label>
