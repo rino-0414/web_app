@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>スケジューラー</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var today = new Date();
             var currentYear = today.getFullYear();
             var currentMonth = today.getMonth();
@@ -15,8 +15,8 @@
             var tasks = {};
 
             function fetchTasks() {
-                $.get("{{ url_for('main.get_all_tasks') }}", function(data) {
-                    tasks = data.reduce(function(acc, task) {
+                $.get("{{ url_for('main.get_all_tasks') }}", function (data) {
+                    tasks = data.reduce(function (acc, task) {
                         var date = new Date(task[0]);
                         var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
                         if (!acc[formattedDate]) {
@@ -40,16 +40,16 @@
                 var nextMonthStartDay = 1;
                 var calendar = '<table><tr>';
                 var daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
-                
+
                 for (var i = 0; i < daysOfWeek.length; i++) {
                     calendar += '<th>' + daysOfWeek[i] + '</th>';
                 }
                 calendar += '</tr><tr>';
-                
+
                 for (var i = 0; i < firstDay; i++) {
                     calendar += '<td class="prev-month">' + (lastMonthDays - firstDay + i + 1) + '</td>';
                 }
-                
+
                 for (var day = 1; day <= daysInMonth; day++) {
                     if ((firstDay + day - 1) % 7 == 0) {
                         calendar += '</tr><tr>';
@@ -58,7 +58,7 @@
                     var cellClass = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) ? 'calendar-day today' : 'calendar-day';
                     calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span></td>';
                 }
-                
+
                 var remainingDays = (firstDay + daysInMonth) % 7;
                 if (remainingDays !== 0) {
                     for (var i = remainingDays; i < 7; i++) {
@@ -66,34 +66,34 @@
                         nextMonthStartDay++;
                     }
                 }
-                
+
                 calendar += '</tr></table>';
                 $('#calendar').html(calendar);
                 $('#current-month').text(year + '年 ' + (month + 1) + '月');
             }
 
             function updateUpcomingTasks() {
-                $.get("{{ url_for('main.get_all_tasks') }}", function(data) {
-                    var upcomingTasks = data.filter(function(task) {
-                        var taskDate = new Date(task[0]);
-                        return taskDate >= today;
-                    }).sort(function(a, b) {
-                        return new Date(a[0]) - new Date(b[0]);
+                $.get("{{ url_for('main.get_all_tasks') }}", function (data) {
+                    var upcomingTasks = data.filter(function (task) {
+                        var taskDate = new Date(task[0]); // task[0] は due_date
+                        return taskDate >= today || (taskDate.getFullYear() === today.getFullYear() && taskDate.getMonth() === today.getMonth() && taskDate.getDate() === today.getDate());
+                    }).sort(function (a, b) {
+                        return new Date(a[0]) - new Date(b[0]); // a[0] と b[0] は due_date
                     }).slice(0, 5);
 
-                    var taskList = upcomingTasks.map(function(task) {
-                        var date = new Date(task[0]);
+                    var taskList = upcomingTasks.map(function (task) {
+                        var date = new Date(task[0]); // task[0] は due_date
                         var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
-                        return '<li><span class="upcoming-task-title" data-id="' + task[3] + '" data-description="' + task[2] + '" data-due-date="' + formattedDate + '">' + task[1] + ' - ' + formattedDate + '</span></li>';
+                        return '<li><span class="upcoming-task-title" data-id="' + task[3] + '" data-description="' + task[2] + '" data-due-date="' + formattedDate + '">' + task[1] + ' - ' + formattedDate + '</span></li>'; // task[1] は title, task[2] は description, task[3] は id
                     }).join('');
 
                     $('#upcoming-tasks').html(taskList);
                 });
             }
-            
+
             fetchTasks();
-            
-            $('#to-prev-month').click(function() {
+
+            $('#to-prev-month').click(function () {
                 currentMonth--;
                 if (currentMonth < 0) {
                     currentMonth = 11;
@@ -101,8 +101,8 @@
                 }
                 generateCalendar(currentYear, currentMonth);
             });
-            
-            $('#to-next-month').click(function() {
+
+            $('#to-next-month').click(function () {
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -110,14 +110,14 @@
                 }
                 generateCalendar(currentYear, currentMonth);
             });
-            
-            $(document).on('click', '.calendar-day', function() {
+
+            $(document).on('click', '.calendar-day', function () {
                 var date = $(this).data('date');
                 var dateParts = date.split('-');
                 var formattedDate = dateParts[1] + '/' + dateParts[2];
                 $('#popup-date').text(formattedDate);
-                $.get("{{ url_for('main.get_tasks') }}", { date: date }, function(data) {
-                    var taskDetails = data.map(function(task) {
+                $.get("{{ url_for('main.get_tasks') }}", { date: date }, function (data) {
+                    var taskDetails = data.map(function (task) {
                         return '<p><strong>' + task[0] + '</strong> ' + task[1] + '</p>';
                     }).join('');
                     $('#task-details').html(taskDetails);
@@ -126,58 +126,60 @@
                 });
             });
 
-            $(document).on('click', '.upcoming-task-title', function() {
+            $(document).on('click', '.upcoming-task-title', function () {
                 var taskTitle = $(this).text();
                 var taskDescription = $(this).data('description');
                 var taskDueDate = $(this).data('due-date');
-                
+                var taskId = $(this).data('id');
+
                 $('#popup-title').text(taskTitle);
                 $('#popup-description').text(taskDescription);
                 $('#popup-date').text(taskDueDate);
-                $('#complete-task-button').data('id', $(this).data('id'));
                 $('#task-popup').show();
+                $('#complete-task-button').data('id', taskId);
             });
-            
-            $('#task-form').submit(function(event) {
+
+            $('#task-form').submit(function (event) {
                 event.preventDefault();
                 var title = $('#task-title').val();
                 var description = $('#task-description').val();
                 var due_date = $('#task-date').val();
-                
+
                 $.post("{{ url_for('main.add') }}", {
                     title: title,
                     description: description,
                     due_date: due_date
-                }, function(data) {
+                }, function (data) {
                     fetchTasks(); // タスクを追加した後にカレンダーを再生成
                     $('#task-form-modal').hide(); // ポップアップを閉じる
                     $('#task-modal').hide(); // タスク詳細ポップアップを閉じる
                     updateUpcomingTasks(); // 期限が近いタスクを更新
                 });
             });
-            
-            $('#task-modal-close').click(function() {
+
+            $('#task-modal-close').click(function () {
                 $('#task-modal').hide();
             });
 
-            $('#task-popup-close').click(function() {
+            $('#task-popup-close').click(function () {
                 $('#task-popup').hide();
             });
 
-            $('#complete-task-button').click(function() {
+            $('#complete-task-button').click(function () {
                 var taskId = $(this).data('id');
                 if (confirm("このタスクを完了済みにしますか？")) {
-                    $.post('/complete_task/' + taskId, function() {
-                        location.reload();
+                    $.post('/complete_task/' + taskId, function () {
+                        updateUpcomingTasks();
+                        $('#task-popup').hide();
                     });
                 }
             });
 
-            $('#add-task-button').click(function() {
+            $('#add-task-button').click(function () {
                 $('#task-form-modal').show();
             });
 
-            $('#task-form-modal-close').click(function() {
+            $('#task-form-modal-close').click(function () {
                 $('#task-form-modal').hide();
             });
         });
@@ -195,18 +197,10 @@
             </div>
             <div id="calendar"></div>
         </div>
-        
+
         <div class="upcoming-tasks-container">
             <h2>期限が近いタスク</h2>
-            <ul id="upcoming-tasks">
-                {% if tasks %}
-                    {% for task in tasks %}
-                        <li><span class="upcoming-task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }} - {{ task[3] }}</span></li>
-                    {% endfor %}
-                {% else %}
-                    <p>現在残っているタスクはありません</p>
-                {% endif %}
-            </ul>
+            <ul id="upcoming-tasks"></ul>
             <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
         </div>
     </div>
@@ -223,7 +217,7 @@
         <h2 id="popup-title"></h2>
         <p id="popup-description"></p>
         <p id="popup-date"></p>
-        <button id="complete-task-button">完了済みにする</button>
+        <button id="complete-task-button" data-id="">完了済みにする</button>
     </div>
 
     <div id="task-form-modal">
@@ -237,6 +231,7 @@
             <button id="add-task-button" type="submit">追加</button>
         </form>
     </div>
+
 </body>
 
 </html>

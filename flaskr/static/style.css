@@ -50,7 +50,6 @@ li {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 800px;
-    min-width: 800px;
 }
 
 table {
@@ -124,19 +123,11 @@ th, td {
 }
 
 /* 日の列を薄い赤に、土の列を薄い青に */
-.calendar-container th:nth-child(1) {
+.calendar-container th:nth-child(1), .calendar-container td:nth-child(1):not(.today) {
     background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
 }
 
-.calendar-container th:nth-child(7) {
-    background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
-}
-
-.calendar-container td:nth-child(1):not(.today) {
-    background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
-}
-
-.calendar-container td:nth-child(7):not(.today) {
+.calendar-container th:nth-child(7), .calendar-container td:nth-child(7):not(.today) {
     background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
 }
 
@@ -338,7 +329,7 @@ th, td {
 
 .upcoming-tasks-header {
     display: flex;
-    justify-content: space-between; /* タスク一覧とタスク編集の位置を揃える */
+    justify-content: space-between; 
     align-items: center;
     width: 100%;
 }
@@ -490,45 +481,35 @@ th, td {
 /* メディアクエリで縦長の画面に対応 */
 @media (max-width: 1200px) {
     .main-container {
-        justify-content: center;
-    }
-
-    .calendar-container {
-        max-width: 75vw;
-    }
-}
-
-@media (max-width: 600px) {
-    .main-container {
         flex-direction: column;
         align-items: center;
     }
 
-    .calendar-container, .upcoming-tasks-container {
-        min-width: 400px;
-        margin: 10px 0;
+    .calendar-container {
+        max-width: 800px;
+        min-width: 600px;
     }
 
     th, td {
-        height: 60px; /* 日付のブロックの縦を大きくする */
+        height: 80px;
     }
     
 }
 
-@media (max-width: 768px) {
+@media (max-width: 650px) {
     .main-container {
         flex-direction: column;
         align-items: center;
     }
 
-    .calendar-container, .upcoming-tasks-container {
-        width: 100%;
-        margin: 10px 0;
+    .calendar-container {
+        max-width: 400px;
+        min-width: 400px;
     }
+
+    th, td {
+        height: 40px;
+    }
+
 }
 
-@media (max-width: 480px) {
-    .calendar-container {
-        width: 100%;
-    }
-}
