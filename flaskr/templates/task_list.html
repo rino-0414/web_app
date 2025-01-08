@@ -15,12 +15,42 @@
                 
                 $('#popup-title').text(taskTitle);
                 $('#popup-description').text(taskDescription);
+                $('#popup-date').text(taskDueDate);
+                $('#complete-task-button').data('id', taskId);
+                $('#incomplete-task-button').data('id', taskId);
                 $('#edit-task-button').data('id', taskId);
+                
+                if ($(this).closest('ul').attr('id') === 'completed-task-list') {
+                    $('#complete-task-button').hide();
+                    $('#incomplete-task-button').show();
+                } else {
+                    $('#complete-task-button').show();
+                    $('#incomplete-task-button').hide();
+                }
+                
                 $('#task-popup').show();
             });
 
             $('#popup-close').click(function() {
                 $('#task-popup').hide();
+            });
+
+            $('#complete-task-button').click(function() {
+                var taskId = $(this).data('id');
+                if (confirm("このタスクを完了済みにしますか？")) {
+                    $.post('/complete_task/' + taskId, function() {
+                        location.reload();
+                    });
+                }
+            });
+
+            $('#incomplete-task-button').click(function() {
+                var taskId = $(this).data('id');
+                if (confirm("このタスクを未完了に戻しますか？")) {
+                    $.post('/incomplete_task/' + taskId, function() {
+                        location.reload();
+                    });
+                }
             });
 
             $('#edit-task-button').click(function() {
@@ -34,7 +64,7 @@
     <div class="container">
         <a href="{{ url_for('main.index') }}" class="back-button">×</a>
         <h1>タスク一覧</h1>
-        <ul>
+        <ul id="task-list">
             {% for task in tasks %}
                 <li>
                     <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span>
@@ -46,10 +76,22 @@
                 </li>
             {% endfor %}
         </ul>
+        <h2>完了したタスク</h2>
+        <ul id="completed-task-list">
+            {% for task in completed_tasks %}
+                <li>
+                    <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span>
+                    <span>{{ task[3] }}</span>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
     <div id="task-popup" style="display:none;">
         <h2 id="popup-title"></h2>
+        <p id="popup-date"></p>
         <p id="popup-description"></p>
+        <button id="complete-task-button">完了済みにする</button>
+        <button id="incomplete-task-button" style="display:none;">未完了に戻す</button>
         <button id="edit-task-button">編集</button>
         <button id="popup-close">×</button>
     </div>

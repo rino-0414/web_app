@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 import psycopg2
-from datetime import date, timedelta
+from datetime import date
 from dotenv import load_dotenv
 import os
 
@@ -30,7 +30,8 @@ def create_tasks_table():
             id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             description TEXT,
-            due_date DATE NOT NULL
+            due_date DATE NOT NULL,
+            completed BOOLEAN NOT NULL DEFAULT FALSE
         );
     ''')
     conn.commit()
@@ -44,7 +45,7 @@ create_tasks_table()
 def index():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM tasks WHERE due_date >= %s ORDER BY due_date', (date.today(),))
+    cur.execute('SELECT * FROM tasks WHERE due_date >= %s AND completed = FALSE ORDER BY due_date', (date.today(),))
     tasks = cur.fetchall()
     cur.close()
     conn.close()
@@ -55,7 +56,7 @@ def get_tasks():
     date_str = request.args.get('date')
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT title, description FROM tasks WHERE due_date = %s', (date_str,))
+    cur.execute('SELECT title, description FROM tasks WHERE due_date = %s AND completed = FALSE', (date_str,))
     tasks = cur.fetchall()
     cur.close()
     conn.close()
@@ -65,7 +66,7 @@ def get_tasks():
 def get_all_tasks():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT due_date, title, description FROM tasks')
+    cur.execute('SELECT due_date, title, description, id FROM tasks WHERE completed = FALSE')
     tasks = cur.fetchall()
     cur.close()
     conn.close()
@@ -80,25 +81,44 @@ def add():
         
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('INSERT INTO tasks (title, description, due_date) VALUES (%s, %s, %s)',
-                    (title, description, due_date))
+        cur.execute('INSERT INTO tasks (title, description, due_date) VALUES (%s, %s, %s)', (title, description, due_date))
         conn.commit()
         cur.close()
         conn.close()
         return redirect(url_for('main.index'))
-    
     return render_template('add.html')
+
+@bp.route('/complete_task/<int:task_id>', methods=['POST'])
+def complete_task(task_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('UPDATE tasks SET completed = TRUE WHERE id = %s', (task_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return '', 204
+
+@bp.route('/incomplete_task/<int:task_id>', methods=['POST'])
+def incomplete_task(task_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('UPDATE tasks SET completed = FALSE WHERE id = %s', (task_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return '', 204
 
 @bp.route('/task_list')
 def task_list():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT id, title, description, due_date FROM tasks ORDER BY due_date')
+    cur.execute('SELECT * FROM tasks WHERE completed = FALSE ORDER BY due_date')
     tasks = cur.fetchall()
+    cur.execute('SELECT * FROM tasks WHERE completed = TRUE ORDER BY due_date')
+    completed_tasks = cur.fetchall()
     cur.close()
     conn.close()
-    current_date = date.today()
-    return render_template('task_list.html', tasks=tasks, current_date=current_date)
+    return render_template('task_list.html', tasks=tasks, completed_tasks=completed_tasks, current_date=date.today())
 
 @bp.route('/edit_task/<int:task_id>', methods=('GET', 'POST'))
 def edit_task(task_id):

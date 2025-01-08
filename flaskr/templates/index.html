@@ -25,6 +25,7 @@
                         acc[formattedDate].push(task);
                         return acc;
                     }, {});
+                    console.log(tasks); // タスクデータをコンソールに出力して確認
                     var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
                     $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
@@ -83,7 +84,7 @@
                     var taskList = upcomingTasks.map(function(task) {
                         var date = new Date(task[0]);
                         var formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
-                        return '<li><span class="upcoming-task-title" data-id="' + task[0] + '" data-description="' + task[2] + '" data-due-date="' + formattedDate + '">' + task[1] + ' - ' + formattedDate + '</span></li>';
+                        return '<li><span class="upcoming-task-title" data-id="' + task[3] + '" data-description="' + task[2] + '" data-due-date="' + formattedDate + '">' + task[1] + ' - ' + formattedDate + '</span></li>';
                     }).join('');
 
                     $('#upcoming-tasks').html(taskList);
@@ -133,6 +134,7 @@
                 $('#popup-title').text(taskTitle);
                 $('#popup-description').text(taskDescription);
                 $('#popup-date').text(taskDueDate);
+                $('#complete-task-button').data('id', $(this).data('id'));
                 $('#task-popup').show();
             });
             
@@ -160,6 +162,15 @@
 
             $('#task-popup-close').click(function() {
                 $('#task-popup').hide();
+            });
+
+            $('#complete-task-button').click(function() {
+                var taskId = $(this).data('id');
+                if (confirm("このタスクを完了済みにしますか？")) {
+                    $.post('/complete_task/' + taskId, function() {
+                        location.reload();
+                    });
+                }
             });
 
             $('#add-task-button').click(function() {
@@ -211,6 +222,8 @@
         <button id="task-popup-close" class="close-button">×</button>
         <h2 id="popup-title"></h2>
         <p id="popup-description"></p>
+        <p id="popup-date"></p>
+        <button id="complete-task-button">完了済みにする</button>
     </div>
 
     <div id="task-form-modal">

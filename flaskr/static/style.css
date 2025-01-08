@@ -124,11 +124,19 @@ th, td {
 }
 
 /* 日の列を薄い赤に、土の列を薄い青に */
-.calendar-container th:nth-child(1), .calendar-container td:nth-child(1):not(.today)  {
+.calendar-container th:nth-child(1) {
     background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
 }
 
-.calendar-container th:nth-child(7), .calendar-container td:nth-child(7):not(.today) {
+.calendar-container th:nth-child(7) {
+    background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
+}
+
+.calendar-container td:nth-child(1):not(.today) {
+    background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
+}
+
+.calendar-container td:nth-child(7):not(.today) {
     background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
 }
 
@@ -148,7 +156,7 @@ th, td {
     border-radius: 5px;
 }
 
-#task-modal-close, #task-form-modal-close {
+#task-modal-close, #task-form-modal-close, #task-popup-close {
     position: absolute;
     top: 10px;
     right: 10px; /* 右上に配置 */
@@ -158,20 +166,16 @@ th, td {
     cursor: pointer;
 }
 
-#add-task-button{
+#add-task-button, #complete-task-button, #incomplete-task-button{
     position: absolute;
     bottom: 10px;
-    right: 10px; /* 右下に配置 */
+    left: 10px;
     background-color: #007bff;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-}
-
-#add-task-button:hover {
-    background-color: #0056b3;
 }
 
 #task-form {
@@ -293,8 +297,6 @@ th, td {
 /* task_list.html 用 */
 #task-list {
     list-style-type: none;
-    padding: 0;
-    margin: 20px 0;
 }
 
 #task-list li {
@@ -310,20 +312,17 @@ th, td {
 
 /* 共通 */
 .back-button {
-    position: absolute;
-    top: 10px;
-    left: 15px;
+    display: inline-block;
+    text-decoration: none;
     background: none;
     border: none;
     font-size: 24px;
-    text-decoration: none;
-    color: black;
     cursor: pointer;
 }
 
 .main-container {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* 中央に寄せる */
     align-items: flex-start;
     padding: 20px 40px; /* 左右のパディングを増やす */
 }
@@ -332,7 +331,7 @@ th, td {
     max-width: 400px;
     margin: 20px;
     background-color: #fff;
-    padding: 10px 20px;
+    padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -488,39 +487,15 @@ th, td {
     cursor: pointer;
 }
 
-#task-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 20px 0;
-}
-
-#task-list li {
-    background-color: #fff;
-    margin: 10px 0;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 /* メディアクエリで縦長の画面に対応 */
 @media (max-width: 1200px) {
     .main-container {
-        flex-direction: column;
-        align-items: center;
+        justify-content: center;
     }
 
-    .calendar-container, .upcoming-tasks-container {
-        min-width: 600px;
-        margin: 10px 0;
+    .calendar-container {
+        max-width: 75vw;
     }
-
-    th, td {
-        height: 75px; /* 日付のブロックの縦を大きくする */
-    }
-    
 }
 
 @media (max-width: 600px) {
@@ -538,4 +513,22 @@ th, td {
         height: 60px; /* 日付のブロックの縦を大きくする */
     }
     
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar-container, .upcoming-tasks-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-container {
+        width: 100%;
+    }
 }
