@@ -49,7 +49,7 @@ li {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 800px; /* ウィンドウの横幅の1/2を基準にする */
+    max-width: 800px;
     min-width: 800px;
 }
 
@@ -63,7 +63,7 @@ th, td {
     padding: 8px;
     text-align: center;
     position: relative;
-    height: 80px; /* 日付のブロックの縦を大きくする */
+    height: 100px; /* 日付のブロックの縦を大きくする */
 }
 
 .calendar-day {
@@ -124,19 +124,11 @@ th, td {
 }
 
 /* 日の列を薄い赤に、土の列を薄い青に */
-.calendar-container th:nth-child(1) {
+.calendar-container th:nth-child(1), .calendar-container td:nth-child(1):not(.today)  {
     background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
 }
 
-.calendar-container th:nth-child(7) {
-    background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
-}
-
-.calendar-container td:nth-child(1):not(.today) {
-    background-color: rgba(255, 0, 0, 0.1); /* 日の列を薄い赤に */
-}
-
-.calendar-container td:nth-child(7):not(.today) {
+.calendar-container th:nth-child(7), .calendar-container td:nth-child(7):not(.today) {
     background-color: rgba(0, 0, 255, 0.1); /* 土の列を薄い青に */
 }
 
@@ -520,6 +512,11 @@ th, td {
         min-width: 600px;
         margin: 10px 0;
     }
+
+    th, td {
+        height: 75px; /* 日付のブロックの縦を大きくする */
+    }
+    
 }
 
 @media (max-width: 600px) {
@@ -532,4 +529,9 @@ th, td {
         min-width: 400px;
         margin: 10px 0;
     }
+
+    th, td {
+        height: 60px; /* 日付のブロックの縦を大きくする */
+    }
+    
 }
