@@ -25,7 +25,6 @@
                         acc[formattedDate].push(task);
                         return acc;
                     }, {});
-                    console.log(tasks); // タスクデータをコンソールに出力して確認
                     var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
                     $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
                     generateCalendar(currentYear, currentMonth);
@@ -150,10 +149,10 @@
                     description: description,
                     due_date: due_date
                 }, function (data) {
-                    fetchTasks(); // タスクを追加した後にカレンダーを再生成
-                    $('#task-form-modal').hide(); // ポップアップを閉じる
-                    $('#task-modal').hide(); // タスク詳細ポップアップを閉じる
-                    updateUpcomingTasks(); // 期限が近いタスクを更新
+                    fetchTasks();
+                    $('#task-form-modal').hide();
+                    $('#task-modal').hide();
+                    updateUpcomingTasks();
                 });
             });
 
