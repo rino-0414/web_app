@@ -93,7 +93,7 @@
             
             fetchTasks();
             
-            $('#prev-month').click(function() {
+            $('#to-prev-month').click(function() {
                 currentMonth--;
                 if (currentMonth < 0) {
                     currentMonth = 11;
@@ -102,7 +102,7 @@
                 generateCalendar(currentYear, currentMonth);
             });
             
-            $('#next-month').click(function() {
+            $('#to-next-month').click(function() {
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -163,9 +163,11 @@
     <h1 id="task-count"></h1>
     <div class="main-container">
         <div class="calendar-container">
-            <button id="prev-month">&lt;</button>
-            <span id="current-month"></span>
-            <button id="next-month">&gt;</button>
+            <div class="calendar-navigation">
+                <button id="to-prev-month">&lt;</button>
+                <span id="current-month"></span>
+                <button id="to-next-month">&gt;</button>
+            </div>
             <div id="calendar"></div>
         </div>
         

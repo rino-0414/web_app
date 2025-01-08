@@ -85,6 +85,38 @@ th, td {
     font-weight: bold; /* 日付を太字にする */
 }
 
+#to-next-month {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#to-prev-month {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* カレンダーのナビゲーションボタンと現在の月の配置 */
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#to-prev-month, #to-next-month {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#current-month {
+    font-size: 18px;
+    font-weight: bold;
+}
+
 /* ポップアップ用 (index.html, task_list.html) */
 #task-modal, #task-form-modal, #task-popup {
     display: none;
@@ -452,4 +484,17 @@ th, td {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* メディアクエリで縦長の画面に対応 */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar-container, .upcoming-tasks-container {
+        width: 100%;
+        margin: 10px 0;
+    }
 }
