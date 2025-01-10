@@ -4,7 +4,7 @@ flaskを使用してindex.htmlを表示させています。
 当環境ではvenvを使用して環境構築を行っています。  
 flask run の --debug は開発中のみ使用してください。ページを更新することでリアルタイムで更新されます。  
    
-python3 -m venv venv
+python -m venv venv
 
 venv\Scripts\Activate.ps1  
 cd flaskr  
@@ -15,9 +15,9 @@ flask run --debug
 共有の際.envを使用してpostgreSQLにアクセスします。以下のフォーマットでWEB_APP上に.envを用意すること。  
   
 DB_HOST=localhost  
-DB_NAME=calendar_app  
+DB_NAME=your_database_name  
 DB_USER=postgres  
-DB_PASSWORD=your_password    
+DB_PASSWORD=your_password   
   
 この.envファイルは.gitignoreにより、プッシュされないようになっています。  
   
