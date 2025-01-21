@@ -7,7 +7,6 @@ flask run の --debug は開発中のみ使用してください。ファイル�
 python -m venv venv
 
 venv\Scripts\Activate.ps1  
-cd flaskr  
 $env:FLASK_APP="flaskr"  
 $env:FLASK_ENV="development"  
 flask run --debug  
