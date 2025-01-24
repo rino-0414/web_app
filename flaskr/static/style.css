@@ -19,7 +19,6 @@ h1 {
 }
 
 h2 {
-    margin-top: 40px;
     font-size: 20px;
 }
 
@@ -34,11 +33,23 @@ li {
     background-color: #fff;
     margin: 10px 0;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+li:hover {
+    background-color: #f0f0f0;
+}
+
+li.task-item:hover {
+    background-color: #f0f0f0;
+}
+
+.calendar-day:hover {
+    background-color: #f0f0f0;
 }
 
 /* index.html 用 */
@@ -47,7 +58,7 @@ li {
     margin: 20px;
     background-color: #fff;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 800px;
 }
@@ -90,16 +101,15 @@ th, td {
     height: 25px; /* 縦のサイズを細くする */
 }
 
-#to-next-month {
+#to-next-month ,#to-prev-month {
     background: none;
     border: none;
     cursor: pointer;
+    padding: 10px;
 }
 
-#to-prev-month {
-    background: none;
-    border: none;
-    cursor: pointer;
+#to-next-month:hover, #to-prev-month:hover {
+    background-color: #f4f4f4;
 }
 
 /* カレンダーのナビゲーションボタンと現在の月の配置 */
@@ -144,7 +154,7 @@ th, td {
     width: 400px; /* ポップアップの幅を一定に */
     height: 300px; /* ポップアップの高さを固定 */
     overflow-y: auto; /* 内容が多い場合にスクロール可能に */
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #task-modal-close, #task-form-modal-close, #task-popup-close {
@@ -165,8 +175,12 @@ th, td {
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 #task-form {
@@ -186,7 +200,7 @@ th, td {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #task-form textarea {
@@ -226,14 +240,14 @@ th, td {
     width: 100%;
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     height: 25px;
 }
 
 #edit-form input[type="date"] {   
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     height: 25px;
 }
 
@@ -243,7 +257,7 @@ th, td {
     height: 200px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .button-group {
@@ -257,7 +271,7 @@ th, td {
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
@@ -281,7 +295,7 @@ th, td {
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
@@ -300,11 +314,20 @@ th, td {
     background-color: #fff;
     margin: 10px 0;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.link-task-list {
+    text-decoration: none;
+    color: #333;
+}
+
+.link-task-list:hover {
+    color: #007bff;
 }
 
 /* 共通 */
@@ -315,6 +338,10 @@ th, td {
     border: none;
     font-size: 24px;
     cursor: pointer;
+}
+
+a.back-button:hover {
+    color: #0056b3;
 }
 
 .main-container {
@@ -329,7 +356,7 @@ th, td {
     margin: 20px;
     background-color: #fff;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -341,6 +368,7 @@ th, td {
 }
 
 .upcoming-tasks-header h2 {
+    
     margin-right: 20px;
 }
 
@@ -348,10 +376,6 @@ th, td {
     font-size: 16px;
     text-decoration: none;
     color: #007bff;
-}
-
-upcoming-tasks-header a:hover {
-    text-decoration: underline;
 }
 
 /* 期限切れのタスクの期限を赤にする */
@@ -377,7 +401,7 @@ upcoming-tasks-header a:hover {
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     text-decoration: none;
     cursor: pointer;
 }
@@ -392,7 +416,7 @@ upcoming-tasks-header a:hover {
     margin: 20px auto;
     padding: 20px;
     background-color: #fff;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -409,7 +433,7 @@ upcoming-tasks-header a:hover {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .edit-form button {
@@ -417,7 +441,7 @@ upcoming-tasks-header a:hover {
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
@@ -471,7 +495,7 @@ upcoming-tasks-header a:hover {
     padding: 20px;
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #task-list-modal .task-list-close {
@@ -537,3 +561,12 @@ upcoming-tasks-header a:hover {
     }
 
 }
+
+.back-button:hover, label:hover, input:hover, textarea:hover, .button-group:hover, button:hover {
+    background-color: #f0f0f0;
+}
+
+#task-list li:hover, #completed-task-list li:hover {
+    background-color: #f0f0f0;
+}
+

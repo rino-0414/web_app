@@ -7,11 +7,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.task-title').click(function() {
-                var taskId = $(this).data('id');
-                var taskTitle = $(this).text();
-                var taskDescription = $(this).data('description');
-                var taskDueDate = $(this).data('due-date');
+            $('.task-item').click(function() {
+                var taskId = $(this).find('.task-title').data('id');
+                var taskTitle = $(this).find('.task-title').text();
+                var taskDescription = $(this).find('.task-title').data('description');
+                var taskDueDate = $(this).find('.task-title').data('due-date');
                 
                 $('#popup-title').text(taskTitle);
                 $('#popup-description').text(taskDescription);
@@ -57,6 +57,15 @@
                 var taskId = $(this).data('id');
                 window.location.href = '/edit_task/' + taskId;
             });
+
+            $('.task-item').hover(
+                function() {
+                    $(this).css('background-color', '#f0f0f0');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
         });
     </script>
 </head>
@@ -66,7 +75,7 @@
         <h1>タスク一覧</h1>
         <ul id="task-list">
             {% for task in tasks %}
-                <li>
+                <li class="task-item">
                     <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span>
                     {% if task[3] < current_date %}
                         <span class="expired-date">{{ task[3] }} 期限切れ</span>
@@ -79,7 +88,7 @@
         <h2>完了したタスク</h2>
         <ul id="completed-task-list">
             {% for task in completed_tasks %}
-                <li>
+                <li class="task-item">
                     <span class="task-title" data-id="{{ task[0] }}" data-description="{{ task[2] }}" data-due-date="{{ task[3] }}">{{ task[1] }}</span>
                     <span>{{ task[3] }}</span>
                 </li>

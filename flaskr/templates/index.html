@@ -25,8 +25,9 @@
                         acc[formattedDate].push(task);
                         return acc;
                     }, {});
-                    var todayStr = currentYear + '-' + (currentMonth + 1).toString().padStart(2, '0') + '-' + currentDate.toString().padStart(2, '0');
-                    $('#task-count').text(currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日');
+                    var todayStr = currentYear + '年' + (currentMonth + 1) + '月' + currentDate + '日' + ['日', '月', '火', '水', '木', '金', '土'][today.getDay()] + '曜日';
+                    var taskCount = Object.values(tasks).reduce((acc, tasks) => acc + tasks.length, 0);
+                    $('#task-count').text(`本日は${todayStr}、未完了タスクは${taskCount}件です`);
                     generateCalendar(currentYear, currentMonth);
                     updateUpcomingTasks();
                 });
@@ -183,6 +184,14 @@
             $('#task-form-modal-close').click(function () {
                 $('#task-form-modal').hide();
             });
+
+            $(document).on('mouseenter', '.calendar-day', function () {
+                $(this).css('background-color', '#f0f0f0');
+            });
+
+            $(document).on('mouseleave', '.calendar-day', function () {
+                $(this).css('background-color', '');
+            });
         });
     </script>
 </head>
@@ -202,7 +211,7 @@
         <div class="upcoming-tasks-container">
             <h2>期限が近いタスク</h2>
             <ul id="upcoming-tasks"></ul>
-            <a href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
+            <a class="link-task-list" href="{{ url_for('main.task_list') }}">タスク一覧を見る</a>
         </div>
     </div>
 
