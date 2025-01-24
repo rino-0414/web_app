@@ -55,7 +55,9 @@
                     }
                     var dateStr = year + '-' + (month + 1).toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
                     var cellClass = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) ? 'calendar-day today' : 'calendar-day';
-                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span></td>';
+                    var taskCount = tasks[dateStr] ? tasks[dateStr].length : 0;
+                    var taskIndicator = taskCount > 0 ? '<span class="task-flag">☑' + taskCount + '</span>' : '';
+                    calendar += '<td class="' + cellClass + '" data-date="' + dateStr + '"><span class="date-number">' + day + '</span>' + taskIndicator + '</td>';
                 }
 
                 var remainingDays = (firstDay + daysInMonth) % 7;
@@ -168,7 +170,7 @@
                 var taskId = $(this).data('id');
                 if (confirm("このタスクを完了済みにしますか？")) {
                     $.post('/complete_task/' + taskId, function () {
-                        updateUpcomingTasks();
+                        fetchTasks(); // タスクを更新
                         $('#task-popup').hide();
                     });
                 }

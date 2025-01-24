@@ -350,7 +350,7 @@ th, td {
     color: #007bff;
 }
 
-.upcoming-tasks-header a:hover {
+upcoming-tasks-header a:hover {
     text-decoration: underline;
 }
 
@@ -482,6 +482,20 @@ th, td {
     border: none;
     font-size: 24px;
     cursor: pointer;
+}
+
+/* タスクがある日付を青くハイライト */
+.has-task {
+    background-color: rgba(0, 0, 255, 0.2);
+}
+
+/* タスクの存在する日付のブロックに旗マークと件数を表示 */
+.task-flag {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 14px; /* サイズを中間にする */
+    color: black; /* モノクロにする */
 }
 
 /* メディアクエリで縦長の画面に対応 */
