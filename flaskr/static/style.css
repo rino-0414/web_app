@@ -285,6 +285,12 @@ th, td {
     cursor: pointer;
 }
 
+#edit-form {
+    max-width: 800px; /* タスク一覧画面のリストの横幅に合わせる */
+    margin: 0 auto; /* 中央に寄せる */
+    padding: 15px;
+}
+
 /* task_list.html 用 */
 #task-list {
     list-style-type: none;
@@ -517,4 +523,3 @@ th, td {
     }
 
 }
-
